@@ -58,7 +58,7 @@ public class LocationEditor {
         return location;
     }
 
-    private static void createOrUpdateTrackLocation(Track track, TrackLocation.Type type, int index, Location location) {
+    public static void createOrUpdateTrackLocation(Track track, TrackLocation.Type type, int index, Location location) {
         if (track.getTrackLocations().hasLocation(type, index)) {
             track.getTrackLocations().update(track.getTrackLocations().getLocation(type, index).get(), location);
         } else {
