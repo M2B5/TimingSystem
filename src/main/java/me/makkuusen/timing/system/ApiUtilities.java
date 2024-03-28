@@ -12,6 +12,7 @@ import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import me.makkuusen.timing.system.api.TimingSystemAPI;
 import me.makkuusen.timing.system.api.events.BoatSpawnEvent;
+import me.makkuusen.timing.system.boat.BoatSpawner;
 import me.makkuusen.timing.system.boatutils.BoatUtilsManager;
 import me.makkuusen.timing.system.boatutils.BoatUtilsMode;
 import me.makkuusen.timing.system.database.TSDatabase;
@@ -411,13 +412,18 @@ public class ApiUtilities {
         }
         Boat boat;
         if (isChestBoat) {
-            boat = (Boat) location.getWorld().spawnEntity(location, EntityType.CHEST_BOAT);
+            boat = BoatSpawner.spawnBoat(location);
+            Bukkit.getScheduler().runTaskLater(TimingSystem.getPlugin(), ()-> {
+                boat.setBoatType(type);
+                boat.getPersistentDataContainer().set(Objects.requireNonNull(NamespacedKey.fromString("spawned", TimingSystem.getPlugin())), PersistentDataType.INTEGER, 1);
+            }, 3);
         } else {
-            boat = (Boat) location.getWorld().spawnEntity(location, EntityType.BOAT);
+            boat = BoatSpawner.spawnChestBoat(location);
+            Bukkit.getScheduler().runTaskLater(TimingSystem.getPlugin(), ()-> {
+                boat.setBoatType(type);
+                boat.getPersistentDataContainer().set(Objects.requireNonNull(NamespacedKey.fromString("spawned", TimingSystem.getPlugin())), PersistentDataType.INTEGER, 1);
+            }, 3);
         }
-        boat.getPersistentDataContainer().set(Objects.requireNonNull(NamespacedKey.fromString("spawned", TimingSystem.getPlugin())), PersistentDataType.INTEGER, 1);
-        Bukkit.getScheduler().runTaskLater(TimingSystem.getPlugin(), () -> boat.setBoatType(type), 2);
-
         return boat;
     }
 
