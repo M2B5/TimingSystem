@@ -412,13 +412,13 @@ public class ApiUtilities {
         }
         Boat boat;
         if (isChestBoat) {
-            boat = BoatSpawner.spawnBoat(location);
+            boat = BoatSpawner.spawnChestBoat(location);
             Bukkit.getScheduler().runTaskLater(TimingSystem.getPlugin(), ()-> {
                 boat.setBoatType(type);
                 boat.getPersistentDataContainer().set(Objects.requireNonNull(NamespacedKey.fromString("spawned", TimingSystem.getPlugin())), PersistentDataType.INTEGER, 1);
             }, 3);
         } else {
-            boat = BoatSpawner.spawnChestBoat(location);
+            boat = BoatSpawner.spawnBoat(location);
             Bukkit.getScheduler().runTaskLater(TimingSystem.getPlugin(), ()-> {
                 boat.setBoatType(type);
                 boat.getPersistentDataContainer().set(Objects.requireNonNull(NamespacedKey.fromString("spawned", TimingSystem.getPlugin())), PersistentDataType.INTEGER, 1);
