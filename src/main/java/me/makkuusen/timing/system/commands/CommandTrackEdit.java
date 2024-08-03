@@ -130,6 +130,14 @@ public class CommandTrackEdit extends BaseCommand {
         player.sendMessage(response);
     }
 
+    @Subcommand("gridgenerator")
+    @CommandCompletion("rowSpace rows")
+    @CommandPermission("%permissiontrackedit_location")
+    public static void onGridCreator(Player player, int spacing, int rows) {
+        var response = TrackEditor.createGrids(player, spacing, rows, null);
+        player.sendMessage(response);
+    }
+
     @Subcommand("option")
     @CommandCompletion("@trackOption")
     @CommandPermission("%permissiontrackedit_option")

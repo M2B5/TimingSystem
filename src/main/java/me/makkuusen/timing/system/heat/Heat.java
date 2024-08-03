@@ -51,6 +51,7 @@ public class Heat {
     private Integer totalPits;
     private Integer startDelay;
     private Integer maxDrivers;
+    private Boolean lonely;
     private SpectatorScoreboard scoreboard;
     private Instant lastScoreboardUpdate = Instant.now();
 
@@ -66,6 +67,7 @@ public class Heat {
         totalLaps = data.get("totalLaps") == null ? null : data.getInt("totalLaps");
         totalPits = data.get("totalPitstops") == null ? null : data.getInt("totalPitstops");
         maxDrivers = data.get("maxDrivers") == null ? null : data.getInt("maxDrivers");
+        lonely = data.get("lonely") instanceof Boolean ? data.get("lonely") : data.get("lonely").equals(1);
         startDelay = data.get("startDelay") == null ? round instanceof FinalRound ? TimingSystem.configuration.getFinalStartDelayInMS() : TimingSystem.configuration.getQualyStartDelayInMS() : data.getInt("startDelay");
         fastestLapUUID = data.getString("fastestLapUUID") == null ? null : UUID.fromString(data.getString("fastestLapUUID"));
         gridManager = new GridManager(round instanceof QualificationRound);
@@ -88,6 +90,7 @@ public class Heat {
             }
 
         }
+
         if (getHeatState() != HeatState.SETUP) {
             return false;
         }
@@ -118,6 +121,11 @@ public class Heat {
         Bukkit.getServer().getPluginManager().callEvent(event);
         gridManager.putDriverOnGrid(driver, getEvent().getTrack());
         EventDatabase.addPlayerToRunningHeat(driver);
+        if (lonely) {
+            driver.getTPlayer().getSettings().setLonely(true);
+        } else {
+            driver.getTPlayer().getSettings().setLonely(false);
+        }
     }
 
     private void updateStartingLivePositions() {

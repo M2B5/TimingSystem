@@ -22,6 +22,7 @@ import me.makkuusen.timing.system.track.tags.TrackTag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -466,5 +467,42 @@ public class TrackEditor {
         } else {
             return Success.TRACK_TIMETRIAL_DISABLED;
         }
+    }
+
+    public static Component createGrids(Player player, int spacing, int rows, Track track) {
+        if (track == null) {
+            if (hasTrackSelected(player.getUniqueId())) {
+                track = getPlayerTrackSelection(player.getUniqueId());
+            } else {
+                return Text.get(player, Error.TRACK_NOT_FOUND_FOR_EDIT);
+            }
+        }
+
+        var grids = track.getTrackLocations().getLocations(TrackLocation.Type.GRID);
+        int size = grids.size();
+        var blockFace = player.getFacing();
+
+        if (!blockFace.isCartesian()) {
+            return Text.get(player, Error.NOT_NOW);
+        }
+
+        for (int i = 1; i <= rows; i++) {
+            for (TrackLocation trackLocation : grids) {
+                Location newLocation = trackLocation.getLocation().clone();
+                if (blockFace.name().equalsIgnoreCase("NORTH")) {
+                    newLocation.add(0, 0, spacing * i * -1);
+                } else if (blockFace.name().equalsIgnoreCase("SOUTH")) {
+                    newLocation.add(0, 0, spacing * i);
+                } else if (blockFace.name().equalsIgnoreCase("WEST")) {
+                    newLocation.add(spacing * i * -1, 0, 0);
+                } else {
+                    newLocation.add(spacing * i, 0, 0);
+                }
+                size++;
+                LocationEditor.createOrUpdateTrackLocation(track, TrackLocation.Type.GRID, size, newLocation);
+            }
+        }
+
+        return Text.get(player, Success.SAVED);
     }
 }

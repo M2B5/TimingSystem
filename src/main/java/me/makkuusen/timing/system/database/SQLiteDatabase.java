@@ -9,6 +9,7 @@ import me.makkuusen.timing.system.ItemBuilder;
 import me.makkuusen.timing.system.TimingSystem;
 import me.makkuusen.timing.system.database.updates.Version2;
 import me.makkuusen.timing.system.database.updates.Version3;
+import me.makkuusen.timing.system.database.updates.Version4;
 import org.bukkit.Material;
 
 import java.io.File;
@@ -64,6 +65,9 @@ public class SQLiteDatabase extends MySQLDatabase {
         if (previousVersion < 3) {
             Version3.updateSQLite();
         }
+        if (previousVersion < 4) {
+            Version4.updateSQLite();
+        }
 
     }
 
@@ -82,6 +86,7 @@ public class SQLiteDatabase extends MySQLDatabase {
                         `compactScoreboard` INTEGER NOT NULL DEFAULT 0,
                         `override` INTEGER NOT NULL DEFAULT 0,
                         `verbose` INTEGER NOT NULL DEFAULT 0,
+                        `lonely` INTEGER NOT NULL DEFAULT 0,
                         `timetrial` INTEGER NOT NULL DEFAULT 1,
                         `toggleSound` INTEGER DEFAULT 1 NOT NULL,
                         `sendFinalLaps` INTEGER DEFAULT 0 NOT NULL
@@ -173,6 +178,7 @@ public class SQLiteDatabase extends MySQLDatabase {
                           `timeLimit` INTEGER DEFAULT NULL,
                           `startDelay` INTEGER DEFAULT NULL,
                           `maxDrivers` INTEGER DEFAULT NULL,
+                          `lonely` INTEGER DEFAULT NULL,
                           `isRemoved` INTEGER NOT NULL DEFAULT '0'
                         );""");
 

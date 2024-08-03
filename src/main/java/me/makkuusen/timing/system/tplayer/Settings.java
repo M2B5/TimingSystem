@@ -4,10 +4,12 @@ import co.aikar.idb.DbRow;
 import lombok.Getter;
 import me.makkuusen.timing.system.TimingSystem;
 import me.makkuusen.timing.system.database.EventDatabase;
+import me.makkuusen.timing.system.loneliness.LonelinessController;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Boat;
+import org.bukkit.entity.ChestBoat;
 
 import java.awt.*;
 import java.util.UUID;
@@ -26,25 +28,35 @@ public class Settings {
     private boolean compactScoreboard;
     private boolean sendFinalLaps;
     private String shortName;
+    private boolean lonely;
+
     public Settings(TPlayer tPlayer, DbRow data) {
         this.uuid = tPlayer.getUniqueId();
         boat = stringToType(data.getString("boat"));
-        chestBoat = data.get("chestBoat") instanceof Boolean ? data.get("chestBoat") : data.get("chestBoat").equals(1);
-        toggleSound = data.get("toggleSound") instanceof Boolean ? data.get("toggleSound") : data.get("toggleSound").equals(1);
-        verbose = data.get("verbose") instanceof Boolean ? data.get("verbose") : data.get("verbose").equals(1);
-        timeTrial = data.get("timetrial") instanceof  Boolean ? data.get("timetrial") : data.get("timetrial").equals(1);
+        chestBoat = getBoolean(data, "chestBoat");
+        toggleSound = getBoolean(data, "toggleSound");
+        verbose = getBoolean(data, "verbose");
+        timeTrial = getBoolean(data, "timetrial");
         color = data.getString("color");
-        compactScoreboard = data.get("compactScoreboard") instanceof Boolean ? data.get("compactScoreboard") : data.get("compactScoreboard").equals(1);
-        sendFinalLaps = data.get("sendFinalLaps") instanceof Boolean ? data.get("sendFinalLaps") : data.get("sendFinalLaps").equals(1);
-        shortName = data.get("shortName") == null ? extractShortName(tPlayer.getName()) : data.get("shortName");
+        compactScoreboard = getBoolean(data, "compactScoreboard");
+        sendFinalLaps = getBoolean(data, "sendFinalLaps");
+        shortName = data.getString("shortName") != null ? data.getString("shortName") : extractShortName(tPlayer.getName());
+        lonely = getBoolean(data, "lonely");
     }
 
     private String extractShortName(String name) {
-        if (name.length() < 5) {
-            return name;
-        } else {
-            return name.substring(0, 4);
+        return name.length() < 5 ? name : name.substring(0, 4);
+    }
+
+    private boolean getBoolean(DbRow data, String key) {
+        Object value = data.get(key);
+        if (value instanceof Boolean) {
+            return (Boolean) value;
         }
+        if (value instanceof Number) {
+            return ((Number) value).intValue() == 1;
+        }
+        return false;  // Default value if key is missing or not a boolean/number
     }
 
     public String getHexColor() {
@@ -91,6 +103,30 @@ public class Settings {
     public void toggleVerbose() {
         verbose = !verbose;
         TimingSystem.getDatabase().playerUpdateValue(uuid, "verbose", verbose);
+    }
+
+    public void toggleLonely() {
+        lonely = !lonely;
+        TimingSystem.getDatabase().playerUpdateValue(uuid, "lonely", lonely);
+
+        if (lonely) {
+            if (Bukkit.getPlayer(uuid).isInsideVehicle() && (Bukkit.getPlayer(uuid).getVehicle() instanceof Boat || Bukkit.getPlayer(uuid).getVehicle() instanceof ChestBoat)) {
+                LonelinessController.hideAllBoatsAndPassengers(Bukkit.getPlayer(uuid));
+            }
+        } else {
+            if (Bukkit.getPlayer(uuid).isInsideVehicle() && (Bukkit.getPlayer(uuid).getVehicle() instanceof Boat || Bukkit.getPlayer(uuid).getVehicle() instanceof ChestBoat)) {
+                LonelinessController.showAllBoatsAndPassengers(Bukkit.getPlayer(uuid));
+            }
+        }
+    }
+
+    public void setLonely(boolean lonely) {
+        this.lonely = lonely;
+        TimingSystem.getDatabase().playerUpdateValue(uuid, "lonely", lonely);
+    }
+
+    public boolean isLonely() {
+        return lonely;
     }
 
     public void toggleTimeTrial() {
