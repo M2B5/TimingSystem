@@ -33,23 +33,30 @@ public class Settings {
     public Settings(TPlayer tPlayer, DbRow data) {
         this.uuid = tPlayer.getUniqueId();
         boat = stringToType(data.getString("boat"));
-        chestBoat = data.get("chestBoat") instanceof Boolean ? data.get("chestBoat") : data.get("chestBoat").equals(1);
-        toggleSound = data.get("toggleSound") instanceof Boolean ? data.get("toggleSound") : data.get("toggleSound").equals(1);
-        verbose = data.get("verbose") instanceof Boolean ? data.get("verbose") : data.get("verbose").equals(1);
-        timeTrial = data.get("timetrial") instanceof  Boolean ? data.get("timetrial") : data.get("timetrial").equals(1);
+        chestBoat = getBoolean(data, "chestBoat");
+        toggleSound = getBoolean(data, "toggleSound");
+        verbose = getBoolean(data, "verbose");
+        timeTrial = getBoolean(data, "timetrial");
         color = data.getString("color");
-        compactScoreboard = data.get("compactScoreboard") instanceof Boolean ? data.get("compactScoreboard") : data.get("compactScoreboard").equals(1);
-        sendFinalLaps = data.get("sendFinalLaps") instanceof Boolean ? data.get("sendFinalLaps") : data.get("sendFinalLaps").equals(1);
-        shortName = data.get("shortName") == null ? extractShortName(tPlayer.getName()) : data.get("shortName");
-        lonely = data.get("lonely") instanceof Boolean ? data.get("lonely") : data.get("lonely").equals(1);
+        compactScoreboard = getBoolean(data, "compactScoreboard");
+        sendFinalLaps = getBoolean(data, "sendFinalLaps");
+        shortName = data.getString("shortName") != null ? data.getString("shortName") : extractShortName(tPlayer.getName());
+        lonely = getBoolean(data, "lonely");
     }
 
     private String extractShortName(String name) {
-        if (name.length() < 5) {
-            return name;
-        } else {
-            return name.substring(0, 4);
+        return name.length() < 5 ? name : name.substring(0, 4);
+    }
+
+    private boolean getBoolean(DbRow data, String key) {
+        Object value = data.get(key);
+        if (value instanceof Boolean) {
+            return (Boolean) value;
         }
+        if (value instanceof Number) {
+            return ((Number) value).intValue() == 1;
+        }
+        return false;  // Default value if key is missing or not a boolean/number
     }
 
     public String getHexColor() {
@@ -103,11 +110,11 @@ public class Settings {
         TimingSystem.getDatabase().playerUpdateValue(uuid, "lonely", lonely);
 
         if (lonely) {
-            if (Bukkit.getPlayer(uuid).isInsideVehicle() && Bukkit.getPlayer(uuid).getVehicle() instanceof Boat || Bukkit.getPlayer(uuid).getVehicle() instanceof ChestBoat) {
+            if (Bukkit.getPlayer(uuid).isInsideVehicle() && (Bukkit.getPlayer(uuid).getVehicle() instanceof Boat || Bukkit.getPlayer(uuid).getVehicle() instanceof ChestBoat)) {
                 LonelinessController.hideAllBoatsAndPassengers(Bukkit.getPlayer(uuid));
             }
         } else {
-            if (Bukkit.getPlayer(uuid).isInsideVehicle() && Bukkit.getPlayer(uuid).getVehicle() instanceof Boat || Bukkit.getPlayer(uuid).getVehicle() instanceof ChestBoat) {
+            if (Bukkit.getPlayer(uuid).isInsideVehicle() && (Bukkit.getPlayer(uuid).getVehicle() instanceof Boat || Bukkit.getPlayer(uuid).getVehicle() instanceof ChestBoat)) {
                 LonelinessController.showAllBoatsAndPassengers(Bukkit.getPlayer(uuid));
             }
         }
