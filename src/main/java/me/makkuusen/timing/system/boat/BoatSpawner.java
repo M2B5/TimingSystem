@@ -1,5 +1,6 @@
 package me.makkuusen.timing.system.boat;
 
+import me.makkuusen.timing.system.api.events.BoatSpawnEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.vehicle.Boat;
 import org.bukkit.Bukkit;
@@ -22,6 +23,18 @@ public class BoatSpawner {
         level.addFreshEntity(boat, CreatureSpawnEvent.SpawnReason.COMMAND);
         boat.setVariant(Boat.Type.OAK);
         var craftBoat = new CraftBoat((CraftServer) Bukkit.getServer(), boat);
+
+        // Create and fire BoatSpawnEvent
+        BoatSpawnEvent boatSpawnEvent = new BoatSpawnEvent(null, location); // Replace null with the appropriate Player if available
+        boatSpawnEvent.setBoat(craftBoat);
+        Bukkit.getServer().getPluginManager().callEvent(boatSpawnEvent);
+
+        // Handle event cancellation
+        if (boatSpawnEvent.isCancelled()) {
+            craftBoat.remove();
+            return null;
+        }
+
         return craftBoat;
     }
 
@@ -35,11 +48,22 @@ public class BoatSpawner {
         level.addFreshEntity(boat, CreatureSpawnEvent.SpawnReason.COMMAND);
         boat.setVariant(Boat.Type.OAK);
         var craftBoat = new CraftChestBoat((CraftServer) Bukkit.getServer(), boat);
+
+        // Create and fire BoatSpawnEvent
+        BoatSpawnEvent boatSpawnEvent = new BoatSpawnEvent(null, location); // Replace null with the appropriate Player if available
+        boatSpawnEvent.setBoat(craftBoat);
+        Bukkit.getServer().getPluginManager().callEvent(boatSpawnEvent);
+
+        // Handle event cancellation
+        if (boatSpawnEvent.isCancelled()) {
+            craftBoat.remove();
+            return null;
+        }
+
         return craftBoat;
     }
 
     public boolean isCollisionless(org.bukkit.entity.Boat boat) {
         return ((CraftBoat) boat).getHandle() instanceof CollisionlessBoat;
     }
-
 }
