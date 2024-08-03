@@ -25,6 +25,6 @@ First of all you need a Minecraft server running [Paper](https://papermc.io). Th
 * [OinkScoreboard](https://github.com/Pigalala/OinkScoreboard) - Makes it possible to display more than 15 rows for big races.
 
 ## Discord
-If you need help with TimingSystem. Look for #support in our [discord](https://discord.boatlabs.net).
+If you need help with TimingSystem look for support in our [discord](https://discord.com/invite/appleseed-boat-gang-417802132733952010)!
 
 Timing System was originally forked from [EpicIceTrack](https://github.com/JustBru00/NetherCubeParkour).
