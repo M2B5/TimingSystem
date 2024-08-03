@@ -6,6 +6,7 @@ import me.makkuusen.timing.system.*;
 import me.makkuusen.timing.system.boatutils.BoatUtilsMode;
 import me.makkuusen.timing.system.database.updates.Version2;
 import me.makkuusen.timing.system.database.updates.Version3;
+import me.makkuusen.timing.system.database.updates.Version4;
 import me.makkuusen.timing.system.event.Event;
 import me.makkuusen.timing.system.heat.Heat;
 import me.makkuusen.timing.system.heat.HeatState;
@@ -110,6 +111,9 @@ public class MySQLDatabase implements TSDatabase, EventDatabase, TrackDatabase, 
         if (previousVersion < 3) {
             Version3.updateMySQL();
         }
+        if (previousVersion < 4) {
+            Version4.updateMySQL();
+        }
     }
 
 
@@ -123,6 +127,7 @@ public class MySQLDatabase implements TSDatabase, EventDatabase, TrackDatabase, 
                       `shortName` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                       `boat` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                       `verbose` tinyint(1) NOT NULL DEFAULT '0',
+                      `lonely` tinyint(1) NOT NULL DEFAULT '0',
                       `timetrial` tinyint(1) NOT NULL DEFAULT '1',
                       `override` tinyint(1) NOT NULL DEFAULT '0',
                       `chestBoat` tinyint(1) NOT NULL DEFAULT '0',
@@ -225,6 +230,7 @@ public class MySQLDatabase implements TSDatabase, EventDatabase, TrackDatabase, 
                       `timeLimit` int(11) DEFAULT NULL,
                       `startDelay` int(11) DEFAULT NULL,
                       `maxDrivers` int(11) DEFAULT NULL,
+                      `lonely` tinyint(1) NOT NULL DEFAULT '0',
                       `isRemoved` tinyint(1) NOT NULL DEFAULT '0',
                       PRIMARY KEY (`id`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;""");
@@ -413,7 +419,7 @@ public class MySQLDatabase implements TSDatabase, EventDatabase, TrackDatabase, 
     @Override
     public Heat createHeat(Round round, int heatIndex) {
         try {
-            var heatId = DB.executeInsert("INSERT INTO `ts_heats`(`roundId`, `heatNumber`, `state`, `startTime`, `endTime`, `fastestLapUUID`, `totalLaps`, `totalPitstops`, `timeLimit`, `startDelay`, `maxDrivers`, `isRemoved`) " +
+            var heatId = DB.executeInsert("INSERT INTO `ts_heats`(`roundId`, `heatNumber`, `state`, `startTime`, `endTime`, `fastestLapUUID`, `totalLaps`, `totalPitstops`, `timeLimit`, `startDelay`, `maxDrivers`, `lonely`, `isRemoved`) " +
                     "VALUES (" +
                     round.getId() + "," +
                     heatIndex + "," +
@@ -426,6 +432,7 @@ public class MySQLDatabase implements TSDatabase, EventDatabase, TrackDatabase, 
                     "NULL," +
                     "NULL," +
                     "NULL," +
+                    "0," +
                     "0)");
             var dbRow = DB.getFirstRow("SELECT * FROM `ts_heats` WHERE `id` = " + heatId + ";");
             return new Heat(dbRow, round);

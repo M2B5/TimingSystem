@@ -158,6 +158,8 @@ success:
   viewing_ended: "&sViewing has ended."
   checkpoints_announcements_on: "&sCheckpoint announcements are now active."
   checkpoints_announcements_off: "&sCheckpoint announcements are now disabled."
+  lonely_on: "&sLonely mode is now active."
+  lonely_off: "&sLonely mode is now disabled."
   sound_on: "&sSwitched sound to on."
   sound_off: "&sSwitched sound to &eoff&s."
   compact_scoreboard_on: "&sSwitched compact scoreboard to on."

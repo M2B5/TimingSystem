@@ -4,10 +4,12 @@ import co.aikar.idb.DbRow;
 import lombok.Getter;
 import me.makkuusen.timing.system.TimingSystem;
 import me.makkuusen.timing.system.database.EventDatabase;
+import me.makkuusen.timing.system.loneliness.LonelinessController;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Boat;
+import org.bukkit.entity.ChestBoat;
 
 import java.awt.*;
 import java.util.UUID;
@@ -26,6 +28,8 @@ public class Settings {
     private boolean compactScoreboard;
     private boolean sendFinalLaps;
     private String shortName;
+    private boolean lonely;
+
     public Settings(TPlayer tPlayer, DbRow data) {
         this.uuid = tPlayer.getUniqueId();
         boat = stringToType(data.getString("boat"));
@@ -37,6 +41,7 @@ public class Settings {
         compactScoreboard = data.get("compactScoreboard") instanceof Boolean ? data.get("compactScoreboard") : data.get("compactScoreboard").equals(1);
         sendFinalLaps = data.get("sendFinalLaps") instanceof Boolean ? data.get("sendFinalLaps") : data.get("sendFinalLaps").equals(1);
         shortName = data.get("shortName") == null ? extractShortName(tPlayer.getName()) : data.get("shortName");
+        lonely = data.get("lonely") instanceof Boolean ? data.get("lonely") : data.get("lonely").equals(1);
     }
 
     private String extractShortName(String name) {
@@ -91,6 +96,30 @@ public class Settings {
     public void toggleVerbose() {
         verbose = !verbose;
         TimingSystem.getDatabase().playerUpdateValue(uuid, "verbose", verbose);
+    }
+
+    public void toggleLonely() {
+        lonely = !lonely;
+        TimingSystem.getDatabase().playerUpdateValue(uuid, "lonely", lonely);
+
+        if (lonely) {
+            if (Bukkit.getPlayer(uuid).isInsideVehicle() && Bukkit.getPlayer(uuid).getVehicle() instanceof Boat || Bukkit.getPlayer(uuid).getVehicle() instanceof ChestBoat) {
+                LonelinessController.hideAllBoatsAndPassengers(Bukkit.getPlayer(uuid));
+            }
+        } else {
+            if (Bukkit.getPlayer(uuid).isInsideVehicle() && Bukkit.getPlayer(uuid).getVehicle() instanceof Boat || Bukkit.getPlayer(uuid).getVehicle() instanceof ChestBoat) {
+                LonelinessController.showAllBoatsAndPassengers(Bukkit.getPlayer(uuid));
+            }
+        }
+    }
+
+    public void setLonely(boolean lonely) {
+        this.lonely = lonely;
+        TimingSystem.getDatabase().playerUpdateValue(uuid, "lonely", lonely);
+    }
+
+    public boolean isLonely() {
+        return lonely;
     }
 
     public void toggleTimeTrial() {

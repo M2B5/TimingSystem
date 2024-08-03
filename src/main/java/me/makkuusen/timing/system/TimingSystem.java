@@ -13,6 +13,7 @@ import me.makkuusen.timing.system.gui.GUIListener;
 import me.makkuusen.timing.system.gui.GuiCommon;
 import me.makkuusen.timing.system.heat.Heat;
 import me.makkuusen.timing.system.listeners.GSitListener;
+import me.makkuusen.timing.system.loneliness.LonelinessController;
 import me.makkuusen.timing.system.papi.TimingSystemPlaceholder;
 import me.makkuusen.timing.system.permissions.*;
 import me.makkuusen.timing.system.theme.TSColor;
@@ -83,6 +84,7 @@ public class TimingSystem extends JavaPlugin {
         pm.registerEvents(new GUIListener(), plugin);
         pm.registerEvents(new TSListener(), plugin);
         pm.registerEvents(new TimeTrialListener(), plugin);
+        pm.registerEvents(new LonelinessController(plugin), plugin);
 
         if (pm.isPluginEnabled("GSit")) {
             pm.registerEvents(new GSitListener(), plugin);

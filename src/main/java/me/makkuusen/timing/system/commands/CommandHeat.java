@@ -298,6 +298,14 @@ public class CommandHeat extends BaseCommand {
         Text.send(player, Success.SAVED);
     }
 
+    @Subcommand("set lonely")
+    @CommandCompletion("@heat <true|false>")
+    @CommandPermission("%permissionheat_set_lonely")
+    public static void onHeatSetLonely(Player player, Heat heat, Boolean lonely) {
+        heat.setLonely(lonely);
+        Text.send(player, Success.SAVED);
+    }
+
     @Subcommand("set driverposition")
     @CommandCompletion("@heat @players <[+/-]pos>")
     @CommandPermission("%permissionheat_set_driverposition")
