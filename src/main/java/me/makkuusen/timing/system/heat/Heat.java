@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.makkuusen.timing.system.ApiUtilities;
 import me.makkuusen.timing.system.TimingSystem;
+import me.makkuusen.timing.system.api.TimingSystemAPI;
 import me.makkuusen.timing.system.api.events.HeatFinishEvent;
 import me.makkuusen.timing.system.api.events.driver.DriverPlacedOnGrid;
 import me.makkuusen.timing.system.database.EventDatabase;
@@ -122,9 +123,13 @@ public class Heat {
         gridManager.putDriverOnGrid(driver, getEvent().getTrack());
         EventDatabase.addPlayerToRunningHeat(driver);
         if (lonely) {
-            driver.getTPlayer().getSettings().setLonely(true);
+            if (!driver.getTPlayer().getSettings().isLonely()){
+                driver.getTPlayer().getSettings().setLonely(true);
+            }
         } else {
-            driver.getTPlayer().getSettings().setLonely(false);
+            if (driver.getTPlayer().getSettings().isLonely()){
+                driver.getTPlayer().getSettings().setLonely(false);
+            }
         }
     }
 

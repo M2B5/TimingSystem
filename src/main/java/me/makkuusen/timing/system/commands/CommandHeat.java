@@ -196,7 +196,6 @@ public class CommandHeat extends BaseCommand {
             return;
         }
         Text.send(player, Error.FAILED_TO_LOAD_HEAT);
-
     }
 
     @Subcommand("reset")

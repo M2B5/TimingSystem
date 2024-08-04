@@ -135,31 +135,10 @@ public interface TrackDatabase {
         TaskChain<?> chain = TimingSystem.newChain();
         TimingSystem.getPlugin().getLogger().warning("Async loading started");
 
-        chain.async(() -> {
-                    try {
-                        TrackDatabase.loadFinishes();
-                    } catch (Exception e) {
-                        TimingSystem.getPlugin().getLogger().severe("Failed to load finishes: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                })
-                .async(() -> {
-                    try {
-                        TrackDatabase.loadAttempts();
-                    } catch (Exception e) {
-                        TimingSystem.getPlugin().getLogger().severe("Failed to load attempts: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                })
+        chain.async(TrackDatabase::loadFinishes)
+                .async(TrackDatabase::loadAttempts)
                 .delay(20)
-                .async(() -> {
-                    try {
-                        TrackDatabase.loadCheckpointTimes();
-                    } catch (Exception e) {
-                        TimingSystem.getPlugin().getLogger().severe("Failed to load checkpoint times: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                })
+                .async(TrackDatabase::loadCheckpointTimes)
                 .execute((finished) -> TimingSystem.getPlugin().getLogger().warning("Loading of finishes completed"));
     }
 
