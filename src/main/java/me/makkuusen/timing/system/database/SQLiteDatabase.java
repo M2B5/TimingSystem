@@ -32,7 +32,7 @@ public class SQLiteDatabase extends MySQLDatabase {
         try {
             var row = DB.getFirstRow("SELECT * FROM `ts_version` ORDER BY `date` DESC;");
 
-            int databaseVersion = 3;
+            int databaseVersion = 4;
             if (row == null) { // First startup
                 DB.executeInsert("INSERT INTO `ts_version` (`version`, `date`) VALUES(" + databaseVersion + ", " + ApiUtilities.getTimestamp() + ");");
                 return true;
