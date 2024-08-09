@@ -298,7 +298,7 @@ public class CommandHeat extends BaseCommand {
     }
 
     @Subcommand("set lonely")
-    @CommandCompletion("@heat <true|false>")
+    @CommandCompletion("@heat true|false")
     @CommandPermission("%permissionheat_set_lonely")
     public static void onHeatSetLonely(Player player, Heat heat, Boolean lonely) {
         heat.setLonely(lonely);
