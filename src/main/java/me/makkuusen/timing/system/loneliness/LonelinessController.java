@@ -100,9 +100,7 @@ public class LonelinessController implements Listener {
     @EventHandler
     public void onExitBoat(VehicleExitEvent event) {
 
-        if (event.isCancelled()) {
-            return;
-        }
+        if (event.isCancelled()) return;
 
         if (event.getExited() instanceof Player player &&
                 (event.getVehicle() instanceof Boat || event.getVehicle() instanceof ChestBoat)) {

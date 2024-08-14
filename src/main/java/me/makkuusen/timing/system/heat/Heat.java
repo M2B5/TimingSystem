@@ -53,6 +53,7 @@ public class Heat {
     private Integer startDelay;
     private Integer maxDrivers;
     private Boolean lonely;
+    private Boolean forceBoat;
     private SpectatorScoreboard scoreboard;
     private Instant lastScoreboardUpdate = Instant.now();
 
@@ -69,6 +70,7 @@ public class Heat {
         totalPits = data.get("totalPitstops") == null ? null : data.getInt("totalPitstops");
         maxDrivers = data.get("maxDrivers") == null ? null : data.getInt("maxDrivers");
         lonely = data.get("lonely") instanceof Boolean ? data.get("lonely") : data.get("lonely").equals(1);
+        forceBoat = data.get("forceBoat") instanceof Boolean ? data.get("forceBoat") : data.get("forceBoat").equals(1);
         startDelay = data.get("startDelay") == null ? round instanceof FinalRound ? TimingSystem.configuration.getFinalStartDelayInMS() : TimingSystem.configuration.getQualyStartDelayInMS() : data.getInt("startDelay");
         fastestLapUUID = data.getString("fastestLapUUID") == null ? null : UUID.fromString(data.getString("fastestLapUUID"));
         gridManager = new GridManager(round instanceof QualificationRound);
@@ -80,6 +82,10 @@ public class Heat {
         } else {
             return "R" + round.getRoundIndex() + "F" + getHeatNumber();
         }
+    }
+
+    public Boolean isForceBoat() {
+        return forceBoat;
     }
 
     public boolean loadHeat() {

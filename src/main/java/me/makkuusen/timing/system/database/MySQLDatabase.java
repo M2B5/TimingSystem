@@ -60,7 +60,7 @@ public class MySQLDatabase implements TSDatabase, EventDatabase, TrackDatabase, 
         try {
             var row = DB.getFirstRow("SELECT * FROM `ts_version` ORDER BY `date` DESC;");
 
-            int databaseVersion = 4;
+            int databaseVersion = 5;
             if (row == null) { // First startup
                 DB.executeInsert("INSERT INTO `ts_version` (`version`, `date`) VALUES('" + databaseVersion + "', " + ApiUtilities.getTimestamp() + ");");
                 return true;
@@ -113,6 +113,9 @@ public class MySQLDatabase implements TSDatabase, EventDatabase, TrackDatabase, 
         }
         if (previousVersion < 4) {
             Version4.updateMySQL();
+        }
+        if (previousVersion < 5) {
+            // Update to version 5
         }
     }
 
@@ -231,6 +234,7 @@ public class MySQLDatabase implements TSDatabase, EventDatabase, TrackDatabase, 
                       `startDelay` int(11) DEFAULT NULL,
                       `maxDrivers` int(11) DEFAULT NULL,
                       `lonely` tinyint(1) NOT NULL DEFAULT '0',
+                      `forceBoat` tinyint(1) NOT NULL DEFAULT '0',
                       `isRemoved` tinyint(1) NOT NULL DEFAULT '0',
                       PRIMARY KEY (`id`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;""");
@@ -419,7 +423,7 @@ public class MySQLDatabase implements TSDatabase, EventDatabase, TrackDatabase, 
     @Override
     public Heat createHeat(Round round, int heatIndex) {
         try {
-            var heatId = DB.executeInsert("INSERT INTO `ts_heats`(`roundId`, `heatNumber`, `state`, `startTime`, `endTime`, `fastestLapUUID`, `totalLaps`, `totalPitstops`, `timeLimit`, `startDelay`, `maxDrivers`, `lonely`, `isRemoved`) " +
+            var heatId = DB.executeInsert("INSERT INTO `ts_heats`(`roundId`, `heatNumber`, `state`, `startTime`, `endTime`, `fastestLapUUID`, `totalLaps`, `totalPitstops`, `timeLimit`, `startDelay`, `maxDrivers`, `lonely`, `forceBoat`, `isRemoved`) " +
                     "VALUES (" +
                     round.getId() + "," +
                     heatIndex + "," +
@@ -432,6 +436,7 @@ public class MySQLDatabase implements TSDatabase, EventDatabase, TrackDatabase, 
                     "NULL," +
                     "NULL," +
                     "NULL," +
+                    "0," +
                     "0," +
                     "0)");
             var dbRow = DB.getFirstRow("SELECT * FROM `ts_heats` WHERE `id` = " + heatId + ";");

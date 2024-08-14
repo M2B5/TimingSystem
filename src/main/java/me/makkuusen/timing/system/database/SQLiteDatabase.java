@@ -178,7 +178,8 @@ public class SQLiteDatabase extends MySQLDatabase {
                           `timeLimit` INTEGER DEFAULT NULL,
                           `startDelay` INTEGER DEFAULT NULL,
                           `maxDrivers` INTEGER DEFAULT NULL,
-                          `lonely` INTEGER DEFAULT NULL,
+                          `lonely` INTEGER NOT NULL DEFAULT '0',
+                          `forceBoat` INTEGER NOT NULL DEFAULT '0',
                           `isRemoved` INTEGER NOT NULL DEFAULT '0'
                         );""");
 
